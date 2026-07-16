@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEGASUS AVIATION | Private Jet Charters & Memberships</title>
+  <meta name="description" content="Experience private aviation refined. Fly with Pegasus for heavy-jet charter access, stratospheric comfort, FBO speed, and VIP helicopter transfers.">
+  <link rel="stylesheet" href="index.css?v=6">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Share+Tech+Mono&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loader" class="loader-overlay">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <svg viewBox="0 0 100 100" class="plane-svg">
+          <path d="M20,80 C32,70 50,75 80,40 C85,32 90,20 90,15 C85,25 70,35 60,35 C50,35 30,55 20,80 Z" fill="currentColor"/>
+          <path d="M15,85 C22,77 40,80 65,52 C70,45 75,35 75,30 C70,38 58,45 50,45 C40,45 25,62 15,85 Z" fill="currentColor" opacity="0.8"/>
+          <path d="M10,90 C15,85 30,85 50,65 C55,60 60,50 60,45 C55,50 48,55 40,55 C32,55 20,70 10,90 Z" fill="currentColor" opacity="0.5"/>
+        </svg>
+        <h1>PEGASUS</h1>
+        <p class="subtitle">CALIBRATING FLIGHT INSTRUMENTS</p>
+      </div>
+      <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div id="progress-text" class="progress-text">Pre-decoding video frames: 0%</div>
+    </div>
+  </div>
+
+  <!-- Unified Scroll-Scrubbed Video Background -->
+  <div class="canvas-wrapper">
+    <canvas id="video-canvas"></canvas>
+    <div class="canvas-overlay"></div>
+  </div>
+
+  <!-- HUD Center Reticle/Horizon (moved as direct child of body to stack behind text cards) -->
+  <div class="hud-center-reticle">
+    <div class="horizon-line left"></div>
+    <div class="horizon-line right"></div>
+    <div class="reticle-center"></div>
+  </div>
+
+  <!-- Fixed Flight Deck HUD Overlay -->
+  <div class="hud-overlay">
+    <!-- Top Instrument Panel -->
+    <header class="hud-header glass-element main-header">
+      <div class="hud-header-container">
+        <a href="#home" class="logo">
+          <svg viewBox="0 0 100 100" class="logo-svg">
+            <path d="M50,20 L52,40 L80,47 L80,53 L52,51 L52,75 L62,82 L62,86 L50,84 L38,86 L38,82 L48,75 L48,51 L20,47 L20,53 L48,40 Z" fill="currentColor"/>
+          </svg>
+          <span>PEGASUS</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#home" class="active">Elite Flight</a>
+          <a href="#destinations">Benefits</a>
+          <a href="#about">Destinations</a>
+          <a href="#loyalty">Jet Card</a>
+        </nav>
+        <div class="header-actions">
+          <a href="#book" class="cta-button btn-glass">Book your trip</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Side HUD Widgets -->
+    <div class="hud-left">
+      <div class="hud-widget">
+        <span class="widget-label">ALTITUDE</span>
+        <div class="widget-value alt-val"><span id="hud-alt">0</span><span class="unit">FT</span></div>
+        <div class="vsi-meter">
+          <div class="vsi-arrow" id="hud-vsi-arrow"></div>
+          <span id="hud-vsi">+0 FPM</span>
+        </div>
+      </div>
+      <div class="hud-widget">
+        <span class="widget-label">AIRSPEED</span>
+        <div class="widget-value"><span id="hud-speed">0.00</span><span class="unit">MACH</span></div>
+      </div>
+    </div>
+
+    <div class="hud-right">
+      <div class="hud-widget text-right">
+        <span class="widget-label">FLIGHT STATE</span>
+        <div class="widget-value state-val" id="hud-state">GROUND</div>
+      </div>
+      <div class="hud-widget text-right">
+        <span class="widget-label">ROUTE COORDS</span>
+        <div class="widget-value monospace" id="hud-gps">51.5074 N, 0.1278 W</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Scrolling Story Panels -->
+  <main class="story-container">
+    
+    <!-- Section 1: Hero / Takeoff -->
+    <section id="home" class="story-section transparent-section">
+      <div class="container">
+        <div class="text-card-reveal">
+          <span class="eyebrow-accent">PEGASUS AVIATION</span>
+          <h2 class="title-serif">The Stratosphere is Yours</h2>
+          <p class="description-lead">Rise above the limits of commercial travel. Pegasus provides instantaneous heavy-jet charter access with absolute privacy, bespoke dining, and global reach. Scroll to command takeoff into a new tier of freedom.</p>
+          <div class="mouse-scroll-indicator">
+            <span class="mouse-shape"><span class="mouse-wheel"></span></span>
+            <span class="indicator-label">SCROLL TO TAKE OFF</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Benefits -->
+    <section id="destinations" class="story-section transparent-section">
+      <div class="container grid-two-cols">
+        <div class="panel-left">
+          <span class="eyebrow-accent">Sovereignty</span>
+          <h2 class="title-serif">Designed for Absolute Comfort</h2>
+          <p class="description-lead">Why fly Pegasus? We do not just charter aircraft; we engineer environment. Operating exclusively in the stratosphere, our clients bypass traditional airspace turbulence and weather systems entirely.</p>
+        </div>
+        <div class="panel-right">
+          <div class="hud-fact-card glass-card">
+            <div class="fact-icon">✦</div>
+            <h3>Guaranteed Availability</h3>
+            <p>Secure heavy and ultra-long-range jet access globally with as little as 10 hours notice. Your aircraft is always ready.</p>
+          </div>
+          <div class="hud-fact-card glass-card">
+            <div class="fact-icon">☊</div>
+            <h3>Stratospheric Serenity</h3>
+            <p>Fly at 41,000 feet, well above municipal air traffic. Enjoy whisper-quiet cabins with custom acoustic damping below 50dB.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: FBO / Speed -->
+    <section id="about" class="story-section transparent-section">
+      <div class="container grid-two-cols cols-reversed">
+        <div class="panel-left">
+          <div class="hud-fact-card glass-card">
+            <div class="fact-icon">⚲</div>
+            <h3>VIP FBO Terminals</h3>
+            <p>Bypass commercial concourses. Pass from your vehicle through private custom checks straight to your cabin in under five minutes.</p>
+          </div>
+          <div class="hud-fact-card glass-card">
+            <div class="fact-icon">🍷</div>
+            <h3>Michelin Culinary</h3>
+            <p>Enjoy bespoke in-flight dining curated by award-winning global culinary partners, matched with vintage wine pairings.</p>
+          </div>
+        </div>
+        <div class="panel-right">
+          <span class="eyebrow-accent">EFFICIENCY</span>
+          <h2 class="title-serif">Global Network. Zero Delays.</h2>
+          <p class="description-lead">Pegasus connects you to over 5,000 private airfields worldwide, landing you closer to your destination. From runway-side boardings to pre-cleared helicopter transfers, we capture lost time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Specifications & Jet Card Tiers -->
+    <section id="loyalty" class="story-section transparent-section">
+      <div class="container">
+        <div class="glass-card full-width-spec-card">
+          <div class="spec-header">
+            <span class="eyebrow-accent">JET CARD PROGRAM</span>
+            <h2 class="title-serif">Pegasus Member Club</h2>
+          </div>
+          <div class="spec-layout">
+            <div class="spec-column">
+              <h3>Fleet Capabilities</h3>
+              <div class="spec-item">
+                <span class="label">MAX RANGE</span>
+                <span class="value monospace">7,700 NM (Non-Stop Global)</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">MAX SPEED</span>
+                <span class="value monospace">MACH 0.925 (Near-Supersonic)</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">CABIN PRESSURIZATION</span>
+                <span class="value monospace">2,900 FT (Reduced Fatigue)</span>
+              </div>
+            </div>
+            <div class="spec-column border-left">
+              <h3>Exclusive Jet Tiers</h3>
+              <div class="spec-item">
+                <span class="label">STRATOS TIER</span>
+                <span class="value">Fixed hourly pricing, guaranteed cabin availability, and zero peak-day surcharges.</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">APEX TIER</span>
+                <span class="value">Complimentary helicopter airport connections and guaranteed global cabin category upgrades.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Book Your Flight Form -->
+    <section id="book" class="story-section form-section-bg">
+      <div class="container flex-centered">
+        <div class="form-wrapper-block">
+          <div class="form-header">
+            <span class="eyebrow-accent">RESERVE YOUR SKY</span>
+            <h2 class="title-serif">Book Your Flight</h2>
+            <p class="description-lead text-center">Pegasus operates under a strict capacity cap to preserve dispatch precision. Only 15 membership slots and select charters remain for the 2027 roster. Book below.</p>
+          </div>
+
+          <form id="booking-form" class="glass-card narrative-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="departure">DEPARTURE PORT</label>
+                <input type="text" id="departure" required placeholder="e.g. London Farnborough (EGLF)">
+              </div>
+              <div class="form-group">
+                <label for="arrival">ARRIVAL PORT</label>
+                <input type="text" id="arrival" required placeholder="e.g. Paris Le Bourget (LFPB)">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="flight-date">DESIRED DATE</label>
+                <input type="date" id="flight-date" required>
+              </div>
+              <div class="form-group">
+                <label for="aircraft">AIRCRAFT CLASS</label>
+                <select id="aircraft">
+                  <option value="heavy" selected>Heavy Jet (Gulfstream G650)</option>
+                  <option value="ultra">Ultra-Long-Range (Global 7500)</option>
+                  <option value="midsize">Super-Midsize (Challenger 350)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label for="contact-email">CONTACT EMAIL</label>
+                <input type="email" id="contact-email" required placeholder="client@domain.com">
+              </div>
+            </div>
+
+            <div class="form-submit-container">
+              <button type="submit" class="cta-button btn-cyan">Book your flight</button>
+            </div>
+          </form>
+
+          <!-- Booking success message -->
+          <div id="booking-success" class="booking-success-message glass-card hidden">
+            <svg viewBox="0 0 100 100" class="success-icon-cyan">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="3"/>
+              <path d="M32,50 L45,63 L68,36" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3>Flight Reservation Logged</h3>
+            <p>Your booking request has been successfully filed in Pegasus flight logs. Our operations director will contact you within 15 minutes to finalize departure coordinates.</p>
+            <button id="reset-booking-btn" class="cta-button btn-glass">Book Another Flight</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="hud-footer">
+      <div class="container footer-content-hud">
+        <span>PEGASUS FLIGHT OPERATIONS AG</span>
+        <span class="footer-dots">...................................</span>
+        <span>&copy; 2026. ALL RIGHTS RESERVED.</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+  <!-- Custom JS Application -->
+  <script src="app.js"></script>
+</body>
+</html>

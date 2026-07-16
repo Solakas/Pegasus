@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Stylized Pegasus Wing Symbol -->
+  <path d="M20,80 C32,70 50,75 80,40 C85,32 90,20 90,15 C85,25 70,35 60,35 C50,35 30,55 20,80 Z" fill="#6fffe9"/>
+  <path d="M15,85 C22,77 40,80 65,52 C70,45 75,35 75,30 C70,38 58,45 50,45 C40,45 25,62 15,85 Z" fill="#38bdf8" opacity="0.8"/>
+  <path d="M10,90 C15,85 30,85 50,65 C55,60 60,50 60,45 C55,50 48,55 40,55 C32,55 20,70 10,90 Z" fill="#38bdf8" opacity="0.5"/>
+</svg>

@@ -1,0 +1,21 @@
+Build me an award-winning cinematic website for FORGE a fictional strength gym in [CITY] with the motto "Earn it."
+
+VISUALS Seedance 2.0 fast and 720p analysis model on the Higgsfield MCP (16:9, no audio, 8s per clip):
+1. HERO: slow motion: an athlete claps chalked hands in a dark gym, the chalk cloud blooming through a single overhead shaft of light.
+2. THE IRON: macro tracking shot along a loaded barbell as hands grip it, knurling and chalk in sharp detail, plates settling.
+3. THE GRIND: a runner sprinting on an outdoor track at dawn, breath visible, camera tracking low and fast alongside.
+
+WEBSITE scroll-scrub the chalk-cloud hero with "FORGE" in massive industrial type punching in and "Earn it." beneath.
+
+Sections:
+- Philosophy section with one line per scroll step ("No mirrors. No machines that do the work for you.")
+- Training programs grid (Strength / Conditioning / Team) with hover states
+- Coaches section with card hover lift
+- Results strip with counters (members, PRs this month, years open)
+- Membership pricing, three tiers, middle highlighted, "First week free" CTA
+- Schedule table + map + signup form.
+
+Design: Charcoal background, bone-white type, one blood-red accent, heavy condensed display font, grain and vignette on all imagery.
+Mobile pass: programs grid becomes swipeable cards.
+
+Launch on localhost and verify the hero scrub and pricing section render correctly before telling me it's done.

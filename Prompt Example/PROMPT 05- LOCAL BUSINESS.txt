@@ -1,0 +1,19 @@
+Build me an award-winning cinematic website for EMBER & OAK a fictional wood-fire steakhouse in [CITY].
+
+VISUALS Seedance 2.0 fast and 720p analysis model on the Higgsfield MCP (16:9, no audio, 8s per clip):
+1. HERO: slow-motion macro of a ribeye searing over open flame, embers rising into darkness, cinematic amber light.
+2. THE ROOM: a slow dolly through a moody dining room at golden hour: leather booths, candlelight, a bartender stirring a cocktail in the background.
+3. THE CRAFT: overhead shot of a chef's hands plating a dish, steam curling up, dark slate table.
+
+WEBSITE full-bleed hero scroll-scrubbing the fire clip with "EMBER & OAK" in an elegant serif tracking in and "Wood fire. Nothing else." beneath.
+
+Sections:
+- Story section over clip 2 with restrained copy ("Six dishes. One fire.")
+- Menu section with two columns (Fire / Field), dish names and prices in refined typography
+- Private dining section over clip 3
+- Hours + map + "Reserve a Table" CTA with a simple date/party-size form.
+
+Design: Near-black background, warm cream text, ember-orange accent, film grain overlay, slow parallax on section images. Copy tone: sparse, confident, sensory.
+Mobile pass: collapse the menu into a single elegant column.
+
+Launch on localhost and verify the hero scrub and reservation form render correctly before telling me it's done.
