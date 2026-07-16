@@ -570,11 +570,11 @@ h1, h2, h3, h4 {
 
 /* Glass Cards - Content panels that draw ON TOP of reticle lines */
 .glass-card {
-  background: var(--color-bg-card);
-  border: 1px solid rgba(111, 255, 233, 0.08);
-  backdrop-filter: blur(25px) saturate(150%);
-  -webkit-backdrop-filter: blur(25px) saturate(150%);
-  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.5) 0%, rgba(5, 9, 20, 0.7) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(40px) saturate(160%);
+  -webkit-backdrop-filter: blur(40px) saturate(160%);
+  border-radius: 16px;
   padding: 2.5rem;
   transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
   will-change: transform;
@@ -582,10 +582,35 @@ h1, h2, h3, h4 {
   z-index: 10; /* Ensures content cards stack securely on top of cockpit reticle */
 }
 
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(111, 255, 233, 0.02));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: background 0.4s ease, opacity 0.4s ease;
+  opacity: 0.8;
+}
+
+.glass-card:hover::before {
+  background: linear-gradient(135deg, rgba(111, 255, 233, 0.7) 0%, rgba(56, 189, 248, 0.4) 50%, rgba(223, 184, 108, 0.2) 100%);
+  opacity: 1;
+}
+
 .glass-card:hover {
-  border-color: rgba(111, 255, 233, 0.25);
-  transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(111, 255, 233, 0.05);
+  border-color: rgba(255, 255, 255, 0);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 
+              0 0 20px rgba(111, 255, 233, 0.12),
+              inset 0 0 15px rgba(255, 255, 255, 0.05);
 }
 
 .hud-fact-card {
