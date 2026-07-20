@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   sections.forEach(section => navObserver.observe(section));
 
   // ----------------------------------------------------
-  // 2. Canvas Frame Extraction Sequence (Optimized Lazy Loading)
+  // 2. Canvas Frame Extraction Sequence
   // ----------------------------------------------------
   const canvas = document.getElementById('video-canvas');
   const ctx = canvas.getContext('2d');
@@ -67,96 +67,48 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBar = document.getElementById('progress-bar');
   const progressText = document.getElementById('progress-text');
 
-  const totalFrames = 60; // Sample at ~15fps (cut from 120) for 50% CPU/memory reduction
-  const frames = new Array(totalFrames).fill(null);
+  const totalFrames = 120; // 120 frames total
+  const frames = [];
   let metadataLoaded = false;
   let canvasWidth = 0;
   let canvasHeight = 0;
-
-  // Static poster configuration
-  const posterImg = new Image();
-  let posterLoaded = false;
-  posterImg.src = 'frame_start.jpg';
-
-  function startAppImmediately() {
-    if (loader && !loader.classList.contains('fade-out')) {
-      loader.classList.add('fade-out');
-      updateTelemetry();
-      triggerInitialAnimations();
-    }
-  }
-
-  posterImg.onload = () => {
-    posterLoaded = true;
-    resizeCanvas();
-    startAppImmediately();
-  };
-  posterImg.onerror = () => {
-    startAppImmediately();
-  };
-  // 1-second fallback safety net to guarantee page is never stuck
-  setTimeout(startAppImmediately, 1000);
 
   function resizeCanvas() {
     canvasWidth = window.innerWidth;
     canvasHeight = window.innerHeight;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    drawFrameToCanvas(currentFrameIndex());
+    if (frames.length > 0) {
+      drawFrameToCanvas(currentFrameIndex());
+    }
   }
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
-  function drawSourceToCanvas(source) {
-    if (!source) return;
+  function drawFrameToCanvas(index) {
+    const frame = frames[index];
+    if (!frame) return;
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    const sourceRatio = source.width / source.height;
+    const videoRatio = frame.width / frame.height;
     const canvasRatio = canvasWidth / canvasHeight;
 
     let sWidth, sHeight, sx, sy;
 
-    if (canvasRatio > sourceRatio) {
-      sWidth = source.width;
-      sHeight = source.width / canvasRatio;
+    if (canvasRatio > videoRatio) {
+      sWidth = frame.width;
+      sHeight = frame.width / canvasRatio;
       sx = 0;
-      sy = (source.height - sHeight) / 2;
+      sy = (frame.height - sHeight) / 2;
     } else {
-      sHeight = source.height;
-      sWidth = source.height * canvasRatio;
-      sx = (source.width - sWidth) / 2;
+      sHeight = frame.height;
+      sWidth = frame.height * canvasRatio;
+      sx = (frame.width - sWidth) / 2;
       sy = 0;
     }
 
-    ctx.drawImage(source, sx, sy, sWidth, sHeight, 0, 0, canvasWidth, canvasHeight);
-  }
-
-  function drawFrameToCanvas(index) {
-    if (document.body.classList.contains('canvas-failed')) return;
-
-    const frame = frames[index];
-    if (frame) {
-      drawSourceToCanvas(frame);
-    } else {
-      // Find the nearest loaded frame, or fallback to the poster image
-      let nearestFrame = null;
-      let minDistance = Infinity;
-      for (let i = 0; i < totalFrames; i++) {
-        if (frames[i]) {
-          const dist = Math.abs(i - index);
-          if (dist < minDistance) {
-            minDistance = dist;
-            nearestFrame = frames[i];
-          }
-        }
-      }
-      if (nearestFrame) {
-        drawSourceToCanvas(nearestFrame);
-      } else if (posterLoaded) {
-        drawSourceToCanvas(posterImg);
-      }
-    }
+    ctx.drawImage(frame, sx, sy, sWidth, sHeight, 0, 0, canvasWidth, canvasHeight);
   }
 
   function currentFrameIndex() {
@@ -168,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return Math.min(Math.floor(scrollFraction * (totalFrames - 1)), totalFrames - 1);
   }
 
-  // Pre-load video frames setup
+  // Pre-load video frames
   const video = document.createElement('video');
   video.src = 'assets/Plane window.mp4';
   video.muted = true;
@@ -182,142 +134,67 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 10000);
 
-  let decodeQueue = [];
-  let processingQueue = false;
-
-  video.addEventListener('loadedmetadata', () => {
+  video.addEventListener('loadedmetadata', async () => {
     metadataLoaded = true;
     clearTimeout(loadTimeout);
-    requestDecodes(currentFrameIndex());
-  });
+    
+    const duration = video.duration;
+    
+    try {
+      for (let i = 0; i < totalFrames; i++) {
+        const timestamp = (i / (totalFrames - 1)) * duration;
+        await seekVideoTo(video, timestamp);
+        
+        let bitmap;
+        if (typeof window.createImageBitmap === 'function') {
+          bitmap = await createImageBitmap(video);
+        } else {
+          bitmap = captureFrameFallback(video);
+        }
+        
+        frames.push(bitmap);
+        
+        const percent = Math.round(((i + 1) / totalFrames) * 100);
+        progressBar.style.width = `${percent}%`;
+        progressText.textContent = `Pre-decoding flight path: ${percent}%`;
+      }
+      
+      progressBar.style.width = '100%';
+      setTimeout(() => {
+        loader.classList.add('fade-out');
+        drawFrameToCanvas(currentFrameIndex());
+        updateTelemetry(); // Render initial telemetry
+        triggerInitialAnimations();
+      }, 500);
 
-  video.addEventListener('error', () => {
-    console.error("Video failed to load.");
-    dismissLoaderAndInitFallback();
+    } catch (err) {
+      console.error("Frame pre-decoding failed: ", err);
+      dismissLoaderAndInitFallback();
+    }
   });
 
   function seekVideoTo(videoElement, time) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const onSeeked = () => {
         videoElement.removeEventListener('seeked', onSeeked);
-        videoElement.removeEventListener('error', onError);
         resolve();
       };
-      const onError = (e) => {
-        videoElement.removeEventListener('seeked', onSeeked);
-        videoElement.removeEventListener('error', onError);
-        reject(e);
-      };
       videoElement.addEventListener('seeked', onSeeked);
-      videoElement.addEventListener('error', onError);
       videoElement.currentTime = time;
     });
   }
 
   function captureFrameFallback(videoElement) {
     const tempCanvas = document.createElement('canvas');
-    const originalWidth = videoElement.videoWidth || 1920;
-    const originalHeight = videoElement.videoHeight || 1080;
-    let targetWidth = originalWidth;
-    let targetHeight = originalHeight;
-    const maxDim = 1280; // Cap resolution
-    
-    if (originalWidth > maxDim || originalHeight > maxDim) {
-      if (originalWidth > originalHeight) {
-        targetWidth = maxDim;
-        targetHeight = Math.round((originalHeight * maxDim) / originalWidth);
-      } else {
-        targetHeight = maxDim;
-        targetWidth = Math.round((originalWidth * maxDim) / originalHeight);
-      }
-    }
-    tempCanvas.width = targetWidth;
-    tempCanvas.height = targetHeight;
+    tempCanvas.width = videoElement.videoWidth || 1280;
+    tempCanvas.height = videoElement.videoHeight || 720;
     const tempCtx = tempCanvas.getContext('2d');
     tempCtx.drawImage(videoElement, 0, 0, tempCanvas.width, tempCanvas.height);
     return tempCanvas;
   }
 
-  function requestDecodes(centerIndex) {
-    const bufferSize = 15; // look-ahead and look-behind buffer
-    const requested = [];
-
-    if (frames[centerIndex] === null) {
-      requested.push(centerIndex);
-    }
-
-    for (let r = 1; r <= bufferSize; r++) {
-      const nextIndex = centerIndex + r;
-      const prevIndex = centerIndex - r;
-      if (nextIndex < totalFrames && frames[nextIndex] === null) {
-        requested.push(nextIndex);
-      }
-      if (prevIndex >= 0 && frames[prevIndex] === null) {
-        requested.push(prevIndex);
-      }
-    }
-
-    decodeQueue = requested;
-    processQueue();
-  }
-
-  async function processQueue() {
-    if (processingQueue || !metadataLoaded) return;
-    processingQueue = true;
-
-    while (decodeQueue.length > 0) {
-      const nextFrameIndex = decodeQueue.shift();
-      if (frames[nextFrameIndex] !== null) continue;
-
-      const duration = video.duration;
-      const timestamp = (nextFrameIndex / (totalFrames - 1)) * duration;
-
-      try {
-        await seekVideoTo(video, timestamp);
-        
-        let bitmap;
-        if (typeof window.createImageBitmap === 'function') {
-          const originalWidth = video.videoWidth || 1920;
-          const originalHeight = video.videoHeight || 1080;
-          let targetWidth = originalWidth;
-          let targetHeight = originalHeight;
-          const maxDim = 1280; // Cap resolution fed to decoder
-          
-          if (originalWidth > maxDim || originalHeight > maxDim) {
-            if (originalWidth > originalHeight) {
-              targetWidth = maxDim;
-              targetHeight = Math.round((originalHeight * maxDim) / originalWidth);
-            } else {
-              targetHeight = maxDim;
-              targetWidth = Math.round((originalWidth * maxDim) / originalHeight);
-            }
-          }
-          bitmap = await createImageBitmap(video, {
-            resizeWidth: targetWidth,
-            resizeHeight: targetHeight,
-            resizeQuality: 'low'
-          });
-        } else {
-          bitmap = captureFrameFallback(video);
-        }
-
-        frames[nextFrameIndex] = bitmap;
-
-        // If the frame we decoded is still the current active one (or nearby), render it immediately
-        const currentIndex = currentFrameIndex();
-        if (Math.abs(currentIndex - nextFrameIndex) <= 1) {
-          drawFrameToCanvas(currentIndex);
-        }
-      } catch (err) {
-        console.error(`Frame lazy-decoding failed for frame ${nextFrameIndex}:`, err);
-      }
-    }
-
-    processingQueue = false;
-  }
-
   function dismissLoaderAndInitFallback() {
-    startAppImmediately();
+    loader.classList.add('fade-out');
     document.body.classList.add('canvas-failed');
     
     ctx.fillStyle = '#050914';
@@ -423,9 +300,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('scroll', () => {
     updateTelemetry();
-    const index = currentFrameIndex();
-    drawFrameToCanvas(index);
-    requestDecodes(index);
+    if (frames.length >= totalFrames) {
+      drawFrameToCanvas(currentFrameIndex());
+    }
   });
 
   // ----------------------------------------------------
